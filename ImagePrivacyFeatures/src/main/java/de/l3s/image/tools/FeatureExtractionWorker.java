@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
+import de.l3s.features.VisualFeatureGroup;
 import uk.ac.soton.ecs.jsh2.picalert.ImageFeatureExtractor;
 
 
@@ -42,6 +44,11 @@ public static void fillReadyIds(HashSet<String> fromdb)
 						if(cur.getName().charAt(i)!='0'){break;}
 						
 					}
+					
+					
+					
+					
+					
 					String id=cur.getName().substring(i,endidx);
 					
 					if(readyids.contains(id)){return;}
@@ -60,10 +67,48 @@ public static void fillReadyIds(HashSet<String> fromdb)
 					{
 						log().error("Photo could not be parsed Unknownerror: "+cur);
 					}
-						if(features==null){
-							Hashtable<String, String> fts = fe.extractFrom(test);
-							
-							if(fts.size()==0)
+					
+					Hashtable<String, String> fts = null;
+					
+					File featuresfile=new File(cur.toString()+".ftr");
+					
+					boolean needtostore=true;
+					if(featuresfile.exists()&&featuresfile.length()>0)
+					{
+					
+						try {
+							fts =  de.l3s.util.file.FileUtils.deserialize(featuresfile, Hashtable.class);
+							int y=0;
+									y++;
+									needtostore=false;
+						} catch (ClassNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+					
+					}
+					
+				
+					
+					
+					HashSet<String> st= null;
+					
+					if(features!=null)
+					{
+						st=new HashSet<String>();
+						for(String f:features){st.add(f);}	
+					}
+					
+					if(st!=null)
+					{
+						if(fts==null){
+						 fts = fe.extractFrom(test,st);	
+						}
+						 if(fts.size()==0)
 							{
 								log().error("Photo could not be parsed:\t"+cur);
 								//fe.getException().printStackTrace();
@@ -72,30 +117,29 @@ public static void fillReadyIds(HashSet<String> fromdb)
 								
 								log().error("Some features are missing:\t"+cur);
 							}
-							listener.featuresRead(id,fts);
-							
-						}else{
-					try {
-						HashSet<String> st=new HashSet<String>();
-						for(String f:features){st.add(f);}
-						Hashtable<String, String> fts = fe.extractFrom(test,st);
-						if(features.length>1&&fts.size()==0)
+					}else
+					{
+						
+						if(fts==null){
+						fts = fe.extractFrom(test);
+						}
+						if(fts.size()==0)
 						{
 							log().error("Photo could not be parsed:\t"+cur);
 						//	fe.getException().printStackTrace();
 						}
 						else
-						if(fts.size()!=features.length)
+						if(features!=null&&fts.size()!=features.length)
 						{
 							log().error("Some features are missing:\t"+cur);
 						//	fe.getException().printStackTrace();
 						}
-						listener.featuresRead(id,fts);
-					} catch (Exception e) {
-						
-						//System.out.println(e.getMessage()+" \t"+cur.toString());
 					}
-						}
+					if(!featuresfile.exists());
+					de.l3s.util.file.FileUtils.serialize(featuresfile, fts);
+					listener.featuresRead(id,fts);
+		
+					
 				//System.out.println(fe.extractFrom(test));
 				
 				
