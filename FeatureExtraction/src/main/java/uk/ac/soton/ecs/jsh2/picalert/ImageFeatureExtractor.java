@@ -3,7 +3,6 @@ package uk.ac.soton.ecs.jsh2.picalert;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +25,7 @@ import org.openimaj.image.MBFImage;
 import org.openimaj.image.analysis.algorithm.EdgeDirectionCoherenceVector;
 import org.openimaj.image.colour.Transforms;
 import org.openimaj.image.feature.global.AvgBrightness;
+import org.openimaj.image.feature.global.Colorfulness;
 import org.openimaj.image.feature.global.HueStats;
 import org.openimaj.image.feature.global.Naturalness;
 import org.openimaj.image.feature.global.Sharpness;
@@ -91,7 +91,7 @@ public class ImageFeatureExtractor implements FeatureExtractor {
 
 			Scanner sc;
 			
-			InputStream bis = ByteWriter.class.getResourceAsStream(name+".bcr");
+			InputStream bis = ImageFeatureExtractor.class.getResourceAsStream(name+".bcr");
 			quant.readASCII(sc=new Scanner(bis));
 			sc.close();
 				return quant;
@@ -242,7 +242,7 @@ public class ImageFeatureExtractor implements FeatureExtractor {
 				HashSet<String> hs = new HashSet<String>();
 			
 				hs.add("dog-sift-fkm12k-rnd1M");
-				Hashtable<String, String> res = fe.extractFrom(test, hs);
+				Hashtable<String, String> res = fe.extractFrom(test, fe.getAvailableFeatures());
 
 				Set<String> features = fe.getAvailableFeatures();
 				// hs.addAll(res.keySet());
@@ -286,10 +286,10 @@ public class ImageFeatureExtractor implements FeatureExtractor {
 
 		MBFImage hsvimg = Transforms.RGB_TO_HSV(rgbimg); // HSV
 
-		FImage greyimg = Transforms.calculateIntensityNTSC(rgbimg); // grey
+		
 
 		for (String f : features) {
-
+			FImage greyimg = Transforms.calculateIntensityNTSC(rgbimg); // grey
 			if (f.startsWith("dog-sift-")) {
 				// sift
 				if (QUANTISERS.length > 0) {
@@ -305,29 +305,33 @@ public class ImageFeatureExtractor implements FeatureExtractor {
 			if (f.equals("avg_brightness")) {
 				// avg_brightness
 				AvgBrightness avgBrightness = new AvgBrightness();
-				avgBrightness.analyseImage(rgbimg);
+				rgbimg.analyseWith(avgBrightness);
+			
 				data.put("avg_brightness", fvProviderToString(avgBrightness));
 
 			}
 			if (f.equals(
-					"colorfulness")) {/*
-										 * // colorfulness, colorfulness_classes
-										 * Colorfulness colorfulness = new
-										 * Colorfulness();
-										 * 
-										 * rgbimg.process(colorfulness);
-										 * data.put("colorfulness",
-										 * fvProviderToString(colorfulness)); //
-										 * data.put("colorfulness_classes", //
-										 * fvProviderToString(colorfulness.
-										 * getColorfulnessAttribute()));
-										 * 
-										 */
+					"colorfulness")) {
+										  // colorfulness, colorfulness_classes
+										  Colorfulness colorfulness = new
+										 Colorfulness();
+										  rgbimg.analyseWith(colorfulness);
+										 
+										  data.put("colorfulness",
+										  fvProviderToString(colorfulness)); //
+										  /*
+										  data.put("colorfulness_classes", //
+										  fvProviderToString(colorfulness.
+										  getColorfulnessAttribute()));
+										  */
+										  
+										 
 			}
 			if (f.equals("edch")) {
 				// edch
 				EdgeDirectionCoherenceVector edcv = new EdgeDirectionCoherenceVector();
-				edcv.analyseImage(greyimg);
+				greyimg.analyseWith(edcv);
+			
 
 				data.put("edch", fvProviderToString(edcv));
 			}
@@ -374,21 +378,23 @@ public class ImageFeatureExtractor implements FeatureExtractor {
 			if (f.equals("hue_stats")) {
 				// hue_stats
 				HueStats hueStats = new HueStats();
-				hueStats.analyseImage(hsvimg);
+				hsvimg.analyseWith(hueStats);
+				
 
 				data.put("hue_stats", fvProviderToString(hueStats));
 			}
 			if (f.equals("naturalness")) {
 				// naturalness
 				Naturalness naturalness = new Naturalness();
-				naturalness.analyseImage(rgbimg);
+				rgbimg.analyseWith(naturalness);
 
 				data.put("naturalness", fvProviderToString(naturalness));
 			}
 			if (f.equals("sharpness")) {
 				// sharpness
 				Sharpness sharpness = new Sharpness();
-				sharpness.analyseImage(greyimg);
+				greyimg.analyseWith(sharpness);
+				
 
 				data.put("sharpness", fvProviderToString(sharpness));
 			}
@@ -447,17 +453,12 @@ public class ImageFeatureExtractor implements FeatureExtractor {
 
 	public  static <T> T deserialize(InputStream fis,Class<T> class1) throws IOException,
 			ClassNotFoundException {
-try{
+
 		// = new FileInputStream(file);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		Object myDeserializedObject = ois.readObject();
 		ois.close();
 		return class1.cast(myDeserializedObject);
-}catch(Exception e)
-{
-e.printStackTrace();	
-}
-return null;
 
 	}
 }
