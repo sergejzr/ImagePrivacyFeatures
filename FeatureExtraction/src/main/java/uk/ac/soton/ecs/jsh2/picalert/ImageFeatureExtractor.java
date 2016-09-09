@@ -3,6 +3,7 @@ package uk.ac.soton.ecs.jsh2.picalert;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -65,7 +67,7 @@ public class ImageFeatureExtractor implements FeatureExtractor {
 
 	static {
 		for (int i = 0; i < QUANTISERS.length; i++)
-			QUANT[i] = loadQuantiser("pubpriv-dog-sift-fkm" + QUANTISERS[i] + "K-rnd1M.byte");
+			QUANT[i] = loadQuantiser("pubpriv-dog-sift-fkm" + QUANTISERS[i] + "K-rnd1M.voc.byte");
 	}
 
 	// same goes for the Haar cascades
@@ -85,26 +87,17 @@ public class ImageFeatureExtractor implements FeatureExtractor {
 	 */
 	protected static ByteCentroidsResult loadQuantiser(String name) {
 		try {
-			 InputStream bis = ImageFeatureExtractor.class.getResourceAsStream(name);
-
-			 byte[][] c=deserialize(bis, byte[][].class);
-			 
 			ByteCentroidsResult quant = new ByteCentroidsResult();
-			quant.centroids=c;
-			
-			
-			//IOUtils.read(bis, ByteCentroidsResult.class);
-					
-					//deserialize(bis, ByteCentroidsResult.class);//IOUtils.read(bis, ByteCentroidsResult.class);
 
-			// byte[][] clusters = quant.getClusters();
-			return quant;
+			Scanner sc;
+			
+			InputStream bis = ByteWriter.class.getResourceAsStream(name+".bcr");
+			quant.readASCII(sc=new Scanner(bis));
+			sc.close();
+				return quant;
 		} catch (IOException e) {
 			e.printStackTrace();
 			
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} 
 		return null;
 	}
@@ -454,12 +447,17 @@ public class ImageFeatureExtractor implements FeatureExtractor {
 
 	public  static <T> T deserialize(InputStream fis,Class<T> class1) throws IOException,
 			ClassNotFoundException {
-
+try{
 		// = new FileInputStream(file);
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		Object myDeserializedObject = ois.readObject();
 		ois.close();
 		return class1.cast(myDeserializedObject);
+}catch(Exception e)
+{
+e.printStackTrace();	
+}
+return null;
 
 	}
 }
