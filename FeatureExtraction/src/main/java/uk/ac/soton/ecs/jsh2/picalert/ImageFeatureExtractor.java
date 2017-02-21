@@ -234,15 +234,21 @@ public class ImageFeatureExtractor implements FeatureExtractor {
 			String[] fotos = new String[] {
 					// "/data2/zerr/taggedimages_clean/002/167/644/838/002167644838.jpg",
 					// "/data2/zerr/taggedimages_clean/000/424/785/153/000424785153.jpg"
-					"/media/zerr/BA0E0E3E0E0DF3E3/darkskiesimgs/000/000/0IS/S04/5-E/-97/032/0000000ISS045-E-97032.jpg" };
+					"/home/zerr/testim/crowd-002.jpg" };
+			
+			
+			
 			ImageFeatureExtractor fe = new ImageFeatureExtractor();
+			System.out.println(fe.getAvailableFeatures());
 			for (String f : fotos) {
 
 				BufferedImage test = ImageIO.read(new File(f));
 				HashSet<String> hs = new HashSet<String>();
 			
 				hs.add("dog-sift-fkm12k-rnd1M");
-				Hashtable<String, String> res = fe.extractFrom(test, fe.getAvailableFeatures());
+				Hashtable<String, String> res = fe.extractFrom(test, 
+						fe.getAvailableFeatures()
+						);
 
 				Set<String> features = fe.getAvailableFeatures();
 				// hs.addAll(res.keySet());
