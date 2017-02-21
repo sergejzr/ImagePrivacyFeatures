@@ -238,6 +238,7 @@ public class ImageFeatureExtractor implements FeatureExtractor {
 			
 			
 			
+			
 			ImageFeatureExtractor fe = new ImageFeatureExtractor();
 			System.out.println(fe.getAvailableFeatures());
 			for (String f : fotos) {
