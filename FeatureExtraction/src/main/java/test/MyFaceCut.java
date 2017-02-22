@@ -14,6 +14,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.codec.binary.Hex;
 import org.openimaj.feature.DoubleFVComparison;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
@@ -81,8 +82,8 @@ try {
 		      {
 		    	  facerect=new Rectangle((float)Double.parseDouble(m.group(1)),
 		    			 (float) Double.parseDouble(m.group(2)),
-		    			 Math.abs((float) Double.parseDouble(m.group(3))-(float)Double.parseDouble(m.group(1))),
-		    			 Math.abs((float) Double.parseDouble(m.group(4))- (float) Double.parseDouble(m.group(2))));
+		    			 Math.abs((float) Double.parseDouble(m.group(3))-(float)Double.parseDouble(m.group(1)))*20,
+		    			 Math.abs((float) Double.parseDouble(m.group(4))- (float) Double.parseDouble(m.group(2)))*20);
 		      	/*
 		    	  facerect=new Rectangle((float)Double.parseDouble(m.group(1)),
 			    			 (float) Double.parseDouble(m.group(2)),
@@ -101,7 +102,8 @@ try {
 			
 			MBFImage curImage = ImageUtilities.readMBF(new File(indir,fname));
 			MBFImage face = curImage.extractROI(facerect);
-			hasher.digest(face.toByteImage());
+			byte[] neid = hasher.digest(face.toByteImage());
+			String strid = new String(Hex.encodeHex(neid));
 					pf.setProperty("gender", cgender.toString());
 					pf.setProperty("file", fname);
 					pf.setProperty("age", age.toString());
@@ -111,10 +113,10 @@ try {
 			pf.setProperty("Sad", Sad+"");
 			pf.setProperty("Surprised", Surprised+"");
 			
-			ImageUtilities.write(face, new File(new File("/home/zerr/soft/Shore/Demo/CmdLine/faces"), fname.hashCode()+".png"));
+			ImageUtilities.write(face, new File(new File("/home/zerr/soft/Shore/Demo/CmdLine/faces"), strid+".png"));
 			String comments="";
 			FileWriter fw;
-			pf.store(fw=new FileWriter(new File(new File("/home/zerr/soft/Shore/Demo/CmdLine/faces"),fname.hashCode()+".props")), comments);
+			pf.store(fw=new FileWriter(new File(new File("/home/zerr/soft/Shore/Demo/CmdLine/faces"),strid+".props")), comments);
 			fw.close();
 			
 			facerect=null;
@@ -132,7 +134,7 @@ try {
 				cgender=gender.neutral;
 			}
 		}
-		else if(line.contains("--Age"))
+		else if(line.contains("---Age = "))
 		{
 			age=getDouble(line);
 			
