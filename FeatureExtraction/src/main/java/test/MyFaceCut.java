@@ -33,7 +33,7 @@ import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
 
-import com.trolltech.qt.gui.QGraphicsEllipseItem.enum_1;
+
 
 public class MyFaceCut {
 enum gender{male,female, neutral};
@@ -98,8 +98,10 @@ try {
 			
 			String fname = f.getName().substring(5, f.getName().length()-4);
 			
+			
 			MBFImage curImage = ImageUtilities.readMBF(new File(indir,fname));
 			MBFImage face = curImage.extractROI(facerect);
+			hasher.digest(face.toByteImage());
 					pf.setProperty("gender", cgender.toString());
 					pf.setProperty("file", fname);
 					pf.setProperty("age", age.toString());
