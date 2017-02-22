@@ -271,6 +271,25 @@ public class ImageFeatureExtractor implements FeatureExtractor {
 
 	Exception e = null;
 
+	public static Hashtable<Integer, Integer> computeSift(FImage greyimg)
+	{
+		LocalFeatureList<Keypoint> keys = new DoGSIFTEngine().findFeatures(greyimg);
+	Hashtable<Integer, Integer> features=new Hashtable<>();
+
+		for (Keypoint k : keys) {
+
+			HardAssigner<byte[], float[], IntFloatPair> assigner = QUANT[0].defaultHardAssigner();
+
+			int id = assigner.assign(k.getFeatureVector().getVector());
+		Integer cnt = features.get(id);
+		if(cnt==null) cnt=0;
+		features.put(id, cnt+1);
+
+		}
+		
+
+					return features;
+	}
 	public Hashtable<String, String> extractFrom(BufferedImage image, Set<String> features) throws Exception {
 		Hashtable<String, String> data = new Hashtable<String, String>();
 
