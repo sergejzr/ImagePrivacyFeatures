@@ -43,7 +43,8 @@ public class MyFaceDetector {
 		MBFImage query;
 		try {
 		//	query = ImageUtilities.readMBF(new File("/home/zerr/testim/crowd-002_small.jpg"));
-			query = ImageUtilities.readMBF(new File("/media/zerr/SAMSUNG/Face Recognition/Shore150h_Android_x86_x64_gcc48/Demo/CmdLine/sample.pgm"));
+		//	query = ImageUtilities.readMBF(new File("/media/zerr/SAMSUNG/Face Recognition/Shore150h_Android_x86_x64_gcc48/Demo/CmdLine/sample.pgm"));
+			query = ImageUtilities.readMBF(new File("./Data/353397003_1dca2e74c2_138_97443916@N00.jpg"));
 			
 			
 			MBFImage frame=query;
@@ -61,9 +62,9 @@ public class MyFaceDetector {
 			List<KEDetectedFace> faces = fd.detectFaces(Transforms.calculateIntensity(frame));
 			System.out.println(new Date().getTime()-d.getTime());
 			
-			System.out.println(d=new Date());
-			faces = fd.detectFaces(Transforms.calculateIntensity(frame));
-			System.out.println(new Date().getTime()-d.getTime());
+//			System.out.println(d=new Date());
+//			faces = fd.detectFaces(Transforms.calculateIntensity(frame));
+//			System.out.println(new Date().getTime()-d.getTime());
 			int i=0;
 			for (KEDetectedFace face : faces) {
 				frame.drawShape(face.getBounds(), RGBColour.RED);
@@ -78,10 +79,10 @@ public class MyFaceDetector {
 				}
 				
 				
-				ImageUtilities.write(frame, new File(new File("/media/zerr/SAMSUNG/Face Recognition/Shore150h_Android_x86_x64_gcc48/Demo/CmdLine/output_java.bmp").getParentFile(), "gface_"+i+".png"));
+				ImageUtilities.write(frame, new File(new File("./Data/output_java.bmp").getParentFile(), "gface_"+i+".bmp"));
 			i++;
 			}
-			File outputFile = new File("/media/zerr/SAMSUNG/Face Recognition/Shore150h_Android_x86_x64_gcc48/Demo/CmdLine/output_java.bmp");
+			File outputFile = new File("./Data/output_java.bmp");
 			
 			//File outputFile = new File("/home/zerr/testim/crowd-002_res.jpg");
 				       ImageUtilities.write(frame, outputFile);
