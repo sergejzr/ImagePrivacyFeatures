@@ -82,9 +82,17 @@ try {
 		      {
 		    	  facerect=new Rectangle((float)Double.parseDouble(m.group(1)),
 		    			 (float) Double.parseDouble(m.group(2)),
-		    			 Math.abs((float) Double.parseDouble(m.group(3))-(float)Double.parseDouble(m.group(1)))*20,
-		    			 Math.abs((float) Double.parseDouble(m.group(4))- (float) Double.parseDouble(m.group(2)))*20);
-		      	/*
+		    			 Math.abs((float) Double.parseDouble(m.group(3))-(float)Double.parseDouble(m.group(1))),
+		    			 Math.abs((float) Double.parseDouble(m.group(4))- (float) Double.parseDouble(m.group(2))));
+		    	  float scaleX = 1.5f;
+					float scaleY = 2.f;
+					float offsetX = 0f;
+					float offsetY = -facerect.height*0.2f;
+					facerect.x -= facerect.width *(scaleX - 1f) * 0.5f - offsetX;
+					facerect.y -= facerect.height* (scaleY - 1f) * 0.5f - offsetY;							
+					facerect.width *= scaleX;
+					facerect.height *= scaleY;
+		    	  /*
 		    	  facerect=new Rectangle((float)Double.parseDouble(m.group(1)),
 			    			 (float) Double.parseDouble(m.group(2)),
 			    			 (float) Double.parseDouble(m.group(3)),
@@ -95,9 +103,16 @@ try {
 		      }
 		}else if(line.startsWith("========="))
 		{
+			String fname;
 			if(facerect==null) continue;
-			
-			String fname = f.getName().substring(5, f.getName().length()-4);
+			try{
+			 fname = f.getName().substring(5, f.getName().length()-4);
+			}catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("Bad File "+f);
+				facerect=null;
+				continue;
+			}
 			
 			
 			MBFImage curImage = ImageUtilities.readMBF(new File(indir,fname));
