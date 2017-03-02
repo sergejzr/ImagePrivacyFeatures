@@ -26,7 +26,7 @@ public class MyFisherFaces {
         try {
             // getting a set of face images
             VFSGroupDataset<FImage> dataset = new VFSGroupDataset<FImage>(
-                    "zip:D:/Adpack/Mine/Face Recognition/App/ImagePrivacyFeatures/FeatureExtraction/Data/zip/faces_small_set.zip", ImageUtilities.FIMAGE_READER);
+                    "zip:D:/Adpack/Mine/Face Recognition/App/ImagePrivacyFeatures/FeatureExtraction/Data/zip/faces_1000_100perfolder.zip", ImageUtilities.FIMAGE_READER);
            
             List<FImage> allfaces = new ArrayList<>();
             for(FImage f:dataset)
@@ -38,12 +38,12 @@ public class MyFisherFaces {
             ResizeProcessor resizeProcessor = new ResizeProcessor(100, 100, true);
             
             // forming training set & testing set
-            int nTraining = 7;
+            int nTraining = 40;
             int nTesting = 2;
             GroupedRandomSplitter<String, FImage> splits = new GroupedRandomSplitter<String, FImage>(dataset, nTraining,
                     0, nTesting);
             GroupedDataset<String, ListDataset<FImage>, FImage> training = splits.getTrainingDataset();
-            //GroupedDataset<String, ListDataset<FImage>, FImage> testing = splits.getTestDataset();
+            GroupedDataset<String, ListDataset<FImage>, FImage> testing = splits.getTestDataset();
 
             // set number of components and train the training set of images
             int components = 50;
@@ -51,7 +51,7 @@ public class MyFisherFaces {
             fisher.train(training);
             
             // Write trained data
-            try (DataOutputStream out = new DataOutputStream(new FileOutputStream("./Data/faces/fisherfacestrained") ) ) {
+            try (DataOutputStream out = new DataOutputStream(new FileOutputStream("./Data/fisherfacestrained/traineddata") ) ) {
             	fisher.writeBinary(out);
             }
             catch (Exception e) {
@@ -61,7 +61,7 @@ public class MyFisherFaces {
             // Read trained data
             // Start it by creating a new FisherImages object to be sure that nothing is messed up inside the class
             fisher = new FisherImages(components);
-            try (DataInputStream in = new DataInputStream(new FileInputStream(".Data/faces/fisherfacestrained") ) ) {
+            try (DataInputStream in = new DataInputStream(new FileInputStream(".Data/fisherfacestrained/traineddata") ) ) {
             	fisher.readBinary(in);
             }
             catch (Exception e) {
