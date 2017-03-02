@@ -8,12 +8,17 @@ import org.openimaj.data.dataset.GroupedDataset;
 import org.openimaj.data.dataset.ListDataset;
 import org.openimaj.data.dataset.VFSGroupDataset;
 import org.openimaj.experiment.dataset.split.GroupedRandomSplitter;
-import org.openimaj.image.DisplayUtilities;
+import org.openimaj.feature.DoubleFV;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
 import org.openimaj.image.model.FisherImages;
 
-public class FisherfacesExample {
+import weka.core.Attribute;
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
+
+public class Fisherfaces2ARFF {
 
     public static void main(String[] args) {
         try {
@@ -43,14 +48,34 @@ public class FisherfacesExample {
             FisherImages fisher = new FisherImages(components);
             fisher.train(training);
             
-            System.out.println(fisher.extractFeature(allfaces.get(0)));
-            System.out.println(fisher.extractFeature(allfaces.get(1)));
-            System.out.println(fisher.extractFeature(allfaces.get(2)));
-            System.out.println(fisher.extractFeature(allfaces.get(3)));
+            DoubleFV f;
+			System.out.println(f=fisher.extractFeature(allfaces.get(0)));
+           
             
             List<FImage> subfaces = new ArrayList<>();
             subfaces=allfaces.subList(0, 40);
             
+            
+            
+            FastVector atts = new FastVector();
+            for(int i=0;i<f.values.length;i++){
+            atts.addElement(new Attribute("f"+i)); 	
+            }
+            
+            Instances arfdataset = new Instances("faces", atts, 0);
+           
+            
+            for(FImage im:allfaces)
+            {
+            	f=fisher.extractFeature(im);
+            	 double[] values = new double[arfdataset.numAttributes()]; 
+            	 for(int i=0;i<f.length();i++)
+            	 {
+            		 values[i]=f.get(i);
+            	 }
+            	 arfdataset.add(new Instance(1.0, values));
+            	
+            }
            
              //drawing the first 12 basis vectors
              List<FImage> fisherFaces = new ArrayList<FImage>();
