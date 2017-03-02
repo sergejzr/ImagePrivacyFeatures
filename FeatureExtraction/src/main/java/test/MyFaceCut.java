@@ -30,6 +30,7 @@ import org.openimaj.image.processing.face.detection.keypoints.FacialKeypoint;
 import org.openimaj.image.processing.face.detection.keypoints.KEDetectedFace;
 import org.openimaj.image.processing.face.recognition.EigenFaceRecogniser;
 import org.openimaj.image.processing.face.recognition.FaceRecognitionEngine;
+import org.openimaj.image.processing.resize.ResizeProcessor;
 import org.openimaj.math.geometry.point.Point2dImpl;
 import org.openimaj.math.geometry.shape.Rectangle;
 import org.openimaj.math.geometry.shape.Shape;
@@ -41,7 +42,9 @@ public class MyFaceCut {
 
 	public static void main(String[] args) {
 
-		File indir = new File("./Data/");
+		// File indir=new File("/media/ssddrive/faces/imageslist/");
+		// File outdir=new File("/home/zerr/soft/Shore/Demo/CmdLine/resimages");
+		File indir = new File("./Data/imageslist");
 		File outdir = new File("./Data/resimages");
 		MessageDigest hasher = null;
 		try {
@@ -50,8 +53,8 @@ public class MyFaceCut {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		;
-	
+		ResizeProcessor resizeProcessor = new ResizeProcessor(100, 100, true);
+
 		for (File f : outdir.listFiles()) {
 			if (!f.getName().endsWith("txt"))
 				continue;
@@ -86,20 +89,20 @@ public class MyFaceCut {
 											- (float) Double.parseDouble(m.group(1))),
 									Math.abs((float) Double.parseDouble(m.group(4))
 											- (float) Double.parseDouble(m.group(2))));
-							
+
 							float scaleX = 1.5f;
 							float scaleY = 1.5f;
-							//float scaleY = 2.f;
+							// float scaleY = 2.f;
 							float offsetX = 0f;
-							//float offsetY = -facerect.height*0.2f;
-							float offsetY = -facerect.height*0.15f;
+							// float offsetY = -facerect.height*0.2f;
+							float offsetY = -facerect.height * 0.15f;
 							facerect.x -= facerect.width * (scaleX - 1f) * 0.5f - offsetX;
-							facerect.y -= facerect.height * (scaleY - 1f) * 0.5f - offsetY;							
+							facerect.y -= facerect.height * (scaleY - 1f) * 0.5f - offsetY;
 							facerect.width *= scaleX;
 							facerect.height *= scaleY;
 							// eliminate possible floating point errors
 							facerect.width = facerect.height;
-							
+
 							/*
 							 * facerect=new
 							 * Rectangle((float)Double.parseDouble(m.group(1)),
@@ -111,13 +114,21 @@ public class MyFaceCut {
 							l++;
 						}
 					} else if (line.startsWith("=========")) {
+						String fname;
 						if (facerect == null)
 							continue;
-
-						String fname = f.getName().substring(5, f.getName().length() - 4);
+						try {
+							fname = f.getName().substring(5, f.getName().length() - 4);
+						} catch (Exception e) {
+							e.printStackTrace();
+							System.out.println("Bad File " + f);
+							facerect = null;
+							continue;
+						}
 
 						MBFImage curImage = ImageUtilities.readMBF(new File(indir, fname));
 						MBFImage face = curImage.extractROI(facerect);
+						face.processInplace(resizeProcessor);
 						byte[] neid = hasher.digest(face.toByteImage());
 						String strid = new String(Hex.encodeHex(neid));
 						pf.setProperty("gender", cgender.toString());
@@ -129,9 +140,15 @@ public class MyFaceCut {
 						pf.setProperty("Sad", Sad + "");
 						pf.setProperty("Surprised", Surprised + "");
 
+						// ImageUtilities.write(face, new File(new
+						// File("/home/zerr/soft/Shore/Demo/CmdLine/faces"),
+						// strid+".png"));
 						ImageUtilities.write(face, new File(new File("./Data/faces"), strid + ".png"));
 						String comments = "";
 						FileWriter fw;
+						// pf.store(fw=new FileWriter(new File(new
+						// File("/home/zerr/soft/Shore/Demo/CmdLine/faces"),strid+".props")),
+						// comments);
 						pf.store(fw = new FileWriter(new File(new File("./Data/faces"), strid + ".props")), comments);
 						fw.close();
 
