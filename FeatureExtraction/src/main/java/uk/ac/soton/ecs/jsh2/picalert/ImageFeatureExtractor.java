@@ -85,7 +85,7 @@ public class ImageFeatureExtractor implements FeatureExtractor {
 	 *            name of the resource
 	 * @return
 	 */
-	protected static ByteCentroidsResult loadQuantiser(String name) {
+	public static ByteCentroidsResult loadQuantiser(String name) {
 		try {
 			ByteCentroidsResult quant = new ByteCentroidsResult();
 
