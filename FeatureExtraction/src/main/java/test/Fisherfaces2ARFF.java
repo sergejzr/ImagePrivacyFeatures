@@ -1,5 +1,7 @@
 package test;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +13,6 @@ import org.openimaj.experiment.dataset.split.GroupedRandomSplitter;
 import org.openimaj.feature.DoubleFV;
 import org.openimaj.image.FImage;
 import org.openimaj.image.ImageUtilities;
-import org.openimaj.image.model.FisherImages;
 
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -22,6 +23,14 @@ public class Fisherfaces2ARFF {
 
     public static void main(String[] args) {
         try {
+        	 int components = 50;
+        	MyFisherImages fisher = new MyFisherImages(components);
+        	  File fisherser=new File("fisher.out");
+        	  
+        	  
+        	  
+        	  
+            
             // getting a set of face images
             VFSGroupDataset<FImage> dataset = new VFSGroupDataset<FImage>(
                     "zip:file:///home/zerr/faces_1000_100perfolder.zip", ImageUtilities.FIMAGE_READER);
@@ -44,9 +53,23 @@ public class Fisherfaces2ARFF {
             GroupedDataset<String, ListDataset<FImage>, FImage> testing = splits.getTestDataset();
 
             // set number of components and train the training set of images
-            int components = 50;
-            FisherImages fisher = new FisherImages(components);
-            fisher.train(training);
+           
+            
+           
+            try {
+              	if(!fisherser.exists()){
+          
+            		 fisher.train(training);
+				fisher.serialize(fisherser);
+            	}
+				fisher=fisher.deserialize(fisherser);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             
             DoubleFV f;
 			System.out.println(f=fisher.extractFeature(allfaces.get(0)));
