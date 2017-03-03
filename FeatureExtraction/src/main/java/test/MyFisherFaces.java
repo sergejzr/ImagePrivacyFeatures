@@ -61,7 +61,7 @@ public class MyFisherFaces {
             // Read trained data
             // Start it by creating a new FisherImages object to be sure that nothing is messed up inside the class
             fisher = new FisherImages(components);
-            try (DataInputStream in = new DataInputStream(new FileInputStream(".Data/fisherfacestrained/traineddata") ) ) {
+            try (DataInputStream in = new DataInputStream(new FileInputStream("./Data/fisherfacestrained/traineddata") ) ) {
             	fisher.readBinary(in);
             }
             catch (Exception e) {
@@ -71,7 +71,7 @@ public class MyFisherFaces {
             int i = 0;
             for (FImage f: allfaces) {
             	DoubleFV feature = fisher.extractFeature(f);
-            	try (PrintWriter pw = new PrintWriter(new File(".Data/faces/" + i++)) ) {
+            	try (PrintWriter pw = new PrintWriter(new File("./Data/faces/" + i++)) ) {
             		feature.writeASCII(pw);
             	}
             	catch (Exception e) {
