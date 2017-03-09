@@ -93,11 +93,11 @@ public class Fisherfaces2ARFF {
            	properties.load(input);
            	if(properties.getProperty("gender").equals("female"))
            	{
-           		if(cntfemale++>max)
+           		if(cntfemale++ > max)
            		continue;
            	}else
            	{
-           		if(cntmale++>max)
+           		if(cntmale++ > max)
            			continue;
            	}
        		// load a properties file
@@ -137,7 +137,7 @@ public class Fisherfaces2ARFF {
            	 {
            		 values[i]=f.get(i);
            	 }
-           	values[i]=properties.getProperty("gender").equals("female")?5:7;
+           	//values[i]=properties.getProperty("gender").equals("female")?5:7;
            	
        		Instance instance = new Instance(1.0, values);
        		instance.setDataset(arfdataset);
