@@ -29,9 +29,9 @@ public class Fisherfaces2ARFF {
     public static void main(String[] args) {
 
     	
-   	 int components = 100;
+   	 int components = 10;
    	MyFisherImages fisher = new MyFisherImages(components);
-   	  File fisherser=new File("fisher.out");
+   	  File fisherser=new File("fisher_"+components+".out");
    	  
    	  
          try {
@@ -79,7 +79,7 @@ public class Fisherfaces2ARFF {
        
 
          Instances arfdataset=null;
-       File testimagedir=new File("/home/zerr/faces31000/faces/");
+       File testimagedir=new File("/home/zerr/faces/faces/");
        int cntfemale=0,cntmale=0;
        int max=5000;
        ResizeProcessor resizeProcessor = new ResizeProcessor(92, 112, false);
@@ -156,7 +156,7 @@ public class Fisherfaces2ARFF {
        ArffSaver saver = new ArffSaver();
        saver.setInstances(arfdataset);
        try {
-			saver.setFile(new File("test.arff"));
+			saver.setFile(new File("test_"+components+".arff"));
 			
 	          saver.writeBatch();
 	          saver.getWriter().close();
