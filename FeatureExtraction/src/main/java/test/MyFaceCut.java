@@ -53,7 +53,7 @@ public class MyFaceCut {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		ResizeProcessor resizeProcessor = new ResizeProcessor(100, 100, true);
+		ResizeProcessor resizeProcessor = new ResizeProcessor(92, 112, false);
 
 		for (File f : outdir.listFiles()) {
 			if (!f.getName().endsWith("txt"))
@@ -90,28 +90,46 @@ public class MyFaceCut {
 									Math.abs((float) Double.parseDouble(m.group(4))
 											- (float) Double.parseDouble(m.group(2))));
 
-							float scaleX = 1.5f;
-							float scaleY = 1.5f;
-							// float scaleY = 2.f;
-							float offsetX = 0f;
-							// float offsetY = -facerect.height*0.2f;
-							float offsetY = -facerect.height * 0.15f;
-							facerect.x -= facerect.width * (scaleX - 1f) * 0.5f - offsetX;
-							facerect.y -= facerect.height * (scaleY - 1f) * 0.5f - offsetY;
-							facerect.width *= scaleX;
-							facerect.height *= scaleY;
-							// eliminate possible floating point errors
-							facerect.width = facerect.height;
+							// float scaleX = 1.5f;
+							// float scaleY = 1.5f;
+							// // float scaleY = 2.f;
+							// float offsetX = 0f;
+							// // float offsetY = -facerect.height*0.2f;
+							// float offsetY = -facerect.height * 0.15f;
+							// facerect.x -= facerect.width * (scaleX - 1f) *
+							// 0.5f - offsetX;
+							// facerect.y -= facerect.height * (scaleY - 1f) *
+							// 0.5f - offsetY;
+							// facerect.width *= scaleX;
+							// facerect.height *= scaleY;
+							// // eliminate possible floating point errors
+							// facerect.width = facerect.height;
 
-							/*
-							 * facerect=new
-							 * Rectangle((float)Double.parseDouble(m.group(1)),
-							 * (float) Double.parseDouble(m.group(2)), (float)
-							 * Double.parseDouble(m.group(3)), (float)
-							 * Double.parseDouble(m.group(4)));
-							 */
-							int l = 0;
-							l++;
+							float ratio = 112f / 92f;
+							float curRatio = facerect.height / facerect.width;
+							float scaleX = 1f;
+							float scaleY = 1f;
+							if (curRatio >= ratio) {
+								// Current height is even bigger than required
+								// compared to width. Therefore
+								// increase the width
+								scaleX = curRatio / ratio;
+								scaleY = 1f;
+							}
+							else {
+								// Current height less than than required compared to width. Therefore
+								// increase the height
+								scaleX = 1f;
+								scaleY = ratio / curRatio;
+							}
+							scaleX *= 1.5f;
+							scaleY *= 1.5f;
+
+							float offsetX = 0f;
+							float offsetY = -facerect.height * 0.15f * (curRatio >= ratio ? 1f : ratio/curRatio);
+							MyCreateTrainingset.rescaleFacerect(facerect, scaleX, scaleY);
+							facerect.x -= -offsetX;
+							facerect.y -= -offsetY;							
 						}
 					} else if (line.startsWith("=========")) {
 						String fname;
@@ -119,7 +137,8 @@ public class MyFaceCut {
 							continue;
 						try {
 							fname = f.getName().substring(5, f.getName().length() - 4);
-						} catch (Exception e) {
+						}
+						catch (Exception e) {
 							e.printStackTrace();
 							System.out.println("Bad File " + f);
 							facerect = null;
@@ -127,6 +146,14 @@ public class MyFaceCut {
 						}
 
 						MBFImage curImage = ImageUtilities.readMBF(new File(indir, fname));
+						
+						// Make sure that facerect is within the original image
+						while (facerect.x < 0 || facerect.y < 0
+								|| facerect.x + facerect.width > curImage.getWidth() - 1
+								|| facerect.y + facerect.height > curImage.getHeight() - 1) {
+							MyCreateTrainingset.rescaleFacerect(facerect, 0.9f, 0.9f);
+						}
+						
 						MBFImage face = curImage.extractROI(facerect);
 						face.processInplace(resizeProcessor);
 						byte[] neid = hasher.digest(face.toByteImage());
@@ -188,7 +215,7 @@ public class MyFaceCut {
 			}
 
 		}
-		
+
 		if (true)
 			return;
 

@@ -25,7 +25,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * @author rvlasov
  *
  */
-public class MyCreateFisherset {
+public class MyCreateTrainingset {
 
 	/**
 	 * @param args
@@ -132,7 +132,7 @@ public class MyCreateFisherset {
 		System.out.println("Program finished");
 	}
 	
-	static private void rescaleFacerect(Rectangle facerect, float scaleX, float scaleY) {
+	static public void rescaleFacerect(Rectangle facerect, float scaleX, float scaleY) {
 		facerect.x -= facerect.width * (scaleX - 1f) * 0.5f;
 		facerect.y -= facerect.height * (scaleY - 1f) * 0.5f;
 		facerect.width *= scaleX;
