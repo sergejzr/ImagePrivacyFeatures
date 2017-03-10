@@ -25,7 +25,7 @@ import org.openimaj.math.geometry.shape.Rectangle;
  * @author rvlasov
  *
  */
-public class MyCreateTrainingset {
+public class MyCreateFisherset {
 
 	/**
 	 * @param args

@@ -127,7 +127,7 @@ public class MyFaceCut {
 
 							float offsetX = 0f;
 							float offsetY = -facerect.height * 0.15f * (curRatio >= ratio ? 1f : ratio/curRatio);
-							MyCreateTrainingset.rescaleFacerect(facerect, scaleX, scaleY);
+							MyCreateFisherset.rescaleFacerect(facerect, scaleX, scaleY);
 							facerect.x -= -offsetX;
 							facerect.y -= -offsetY;							
 						}
@@ -151,7 +151,7 @@ public class MyFaceCut {
 						while (facerect.x < 0 || facerect.y < 0
 								|| facerect.x + facerect.width > curImage.getWidth() - 1
 								|| facerect.y + facerect.height > curImage.getHeight() - 1) {
-							MyCreateTrainingset.rescaleFacerect(facerect, 0.9f, 0.9f);
+							MyCreateFisherset.rescaleFacerect(facerect, 0.9f, 0.9f);
 						}
 						
 						MBFImage face = curImage.extractROI(facerect);
