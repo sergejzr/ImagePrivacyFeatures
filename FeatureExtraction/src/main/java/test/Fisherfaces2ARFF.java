@@ -29,7 +29,7 @@ public class Fisherfaces2ARFF {
     public static void main(String[] args) {
 
     	
-   	 int components = 10;
+   	 int components = 210;
    	MyFisherImages fisher = new MyFisherImages(components);
    	  File fisherser=new File("fisher_"+components+".out");
    	  
@@ -50,7 +50,7 @@ public class Fisherfaces2ARFF {
      //  DisplayUtilities.display("AllFaces", allfaces);
        
        // forming training set & testing set
-       int nTraining = 8;
+       int nTraining = 9;
        int nTesting = 1;
        
        
@@ -79,9 +79,11 @@ public class Fisherfaces2ARFF {
        
 
          Instances arfdataset=null;
-       File testimagedir=new File("/home/zerr/faces/faces/");
+     //    File testimagedir=new File("/home/zerr/faces/faces/");
+         
+      File testimagedir=new File("/home/zerr/faces440/faces_440/");
        int cntfemale=0,cntmale=0;
-       int max=5000;
+       int max=160;
        ResizeProcessor resizeProcessor = new ResizeProcessor(92, 112, false);
        for(File tf:testimagedir.listFiles())
        {
@@ -105,8 +107,8 @@ public class Fisherfaces2ARFF {
        		
        		
 				FImage im=ImageUtilities.readF(tf);
-				
-				FImage sim = im.process(resizeProcessor);
+				FImage sim = im;
+			//	FImage sim = im.process(resizeProcessor);
 
 			
 				
